@@ -4,16 +4,19 @@
   "private": true,
   "dependencies": {
     "@types/jest": "24.0.19",
+    "@types/localforage": "0.0.34",
     "@types/node": "12.11.6",
     "@types/react": "16.9.9",
     "@types/react-dom": "16.9.2",
+    "face-api.js": "^0.21.0",
+    "localforage": "^1.7.3",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-scripts": "3.2.0",
-    "typescript": "3.6.4"
+    "typescript": "^3.7.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "HTTPS=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
