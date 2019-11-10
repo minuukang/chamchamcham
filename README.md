@@ -1,1 +1,1 @@
-chamchamcham.minukang.now.sh
+https://chamchamcham.minukang.now.sh
