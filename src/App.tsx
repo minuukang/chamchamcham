@@ -1,7 +1,8 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import "./App.css";
 import ChamChamCham, { C3FaceMatch } from "./modules/chamchamcham";
 import C3Player from "./modules/player";
+import Hand from "./components/hand";
 
 interface IState {
   isLoadingModel: boolean;
@@ -15,14 +16,18 @@ class App extends React.Component<{}, IState> {
     isLoadingModel: false,
     player: null,
     singleMatch: null,
-    position: null,
+    position: null
   };
 
   private resetTimer: number = 0;
   private c3: ChamChamCham | null = null;
 
-  private readonly containerRef: React.RefObject<HTMLDivElement> = React.createRef();
-  private readonly videoRef: React.RefObject<HTMLVideoElement> = React.createRef();
+  private readonly containerRef: React.RefObject<
+    HTMLDivElement
+  > = React.createRef();
+  private readonly videoRef: React.RefObject<
+    HTMLVideoElement
+  > = React.createRef();
 
   public async componentDidMount() {
     this.setState({ isLoadingModel: true });
@@ -36,13 +41,29 @@ class App extends React.Component<{}, IState> {
   public render() {
     return (
       <div className="container" ref={this.containerRef}>
+        {this.state.position && (
+          <div className="hand">
+            <Hand direction={this.state.position} />
+          </div>
+        )}
         <div className="buttons">
           {this.state.isLoadingModel && <p>모델 로딩 중입니다...</p>}
-          {!this.state.player && <button onClick={this.playGame} disabled={!this.state.singleMatch}>게임시작</button>}
+          {!this.state.player && (
+            <button onClick={this.playGame} disabled={!this.state.singleMatch}>
+              게임시작
+            </button>
+          )}
           {this.state.player && this.state.singleMatch && (
             <>
               <p>{this.state.player.name}</p>
-              <p>{this.state.position === "right" ? "오른쪽" : this.state.position === "left" ? "왼쪽" : "중앙"}을 보고있습니다.</p>
+              <p>
+                {this.state.position === "right"
+                  ? "오른쪽"
+                  : this.state.position === "left"
+                  ? "왼쪽"
+                  : "중앙"}
+                을 보고있습니다.
+              </p>
             </>
           )}
         </div>
@@ -55,7 +76,7 @@ class App extends React.Component<{}, IState> {
     if (this.state.singleMatch) {
       window.clearTimeout(this.resetTimer);
       this.setState({
-        player: new C3Player(this.c3!, this.state.singleMatch),
+        player: new C3Player(this.c3!, this.state.singleMatch)
       });
     }
   };
@@ -79,9 +100,11 @@ class App extends React.Component<{}, IState> {
           const bestMatch = await this.state.player.getBestMatch();
           if (bestMatch) {
             this.c3!.drawLandmark(bestMatch.detection);
-            const facePosition = this.state.player.getMatchFacePosition(bestMatch);
+            const facePosition = this.state.player.getMatchFacePosition(
+              bestMatch
+            );
             this.setState({
-              position: facePosition,
+              position: facePosition
             });
           } else if (!this.resetTimer) {
             this.resetTimer = window.setTimeout(() => {
@@ -89,10 +112,10 @@ class App extends React.Component<{}, IState> {
             }, 1000);
           }
         }
-      }
+      };
       await main();
       window.requestAnimationFrame(drawVideo);
-    }
+    };
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -100,7 +123,7 @@ class App extends React.Component<{}, IState> {
         video: {
           width: 640,
           height: 480,
-          facingMode: "user",
+          facingMode: "user"
         }
       });
       video.srcObject = stream;

@@ -3,7 +3,10 @@ import ChamChamCham, { C3FaceMatch } from "./chamchamcham";
 
 const maxDescriptorDistance = 0.4;
 
-function createImageFromFaceMatch(match: C3FaceMatch, input: HTMLVideoElement): Promise<Blob> {
+function createImageFromFaceMatch(
+  match: C3FaceMatch,
+  input: HTMLVideoElement
+): Promise<Blob> {
   return new Promise(resolve => {
     const canvas = document.createElement("canvas");
     canvas.width = match.detection.box.width;
@@ -37,23 +40,27 @@ export default class Player {
 
   public constructor(
     private readonly c3: ChamChamCham,
-    private readonly match: C3FaceMatch,
-  ){
-    this.name = `${Math.floor(match.age)}살 미경 ${match.gender === "male" ? "남자" : "여자"}`;
-    const label = new faceapi.LabeledFaceDescriptors(this.name, [match.descriptor]);
+    private readonly match: C3FaceMatch
+  ) {
+    this.name = `${Math.floor(match.age)}살 미경 ${
+      match.gender === "male" ? "남자" : "여자"
+    }`;
+    const label = new faceapi.LabeledFaceDescriptors(this.name, [
+      match.descriptor
+    ]);
     this.faceMatcher = new faceapi.FaceMatcher(label, maxDescriptorDistance);
     this.createdAt = new Date();
     createImageFromFaceMatch(match, c3.input).then(blob => {
       this.profileImage = blob;
-    })
+    });
   }
 
   public toData() {
     return {
       name: this.name,
       createdAt: this.createdAt,
-      image: this.profileImage,
-    }
+      image: this.profileImage
+    };
   }
 
   public async getBestMatch() {
@@ -68,23 +75,27 @@ export default class Player {
     return matchs[0];
   }
 
-  public getMatchFacePosition(match: ThenArg<ReturnType<typeof Player.prototype.getBestMatch>>) {
+  public getMatchFacePosition(
+    match: ThenArg<ReturnType<typeof Player.prototype.getBestMatch>>
+  ) {
     const landmark = match.detection.landmarks;
     const nosePoints = landmark.getNose();
     const topNosePoint = nosePoints[0];
     const bottomNosePoint = nosePoints[3];
     const diff = topNosePoint.x - bottomNosePoint.x;
     if (match.match.distance > 0.18) {
-      const label = new faceapi.LabeledFaceDescriptors(this.name, [match.detection.descriptor]);
-      this.faceMatcher = new faceapi.FaceMatcher([
-        ...this.faceMatcher.labeledDescriptors,
-        label,
-      ], this.faceMatcher.distanceThreshold)
+      const label = new faceapi.LabeledFaceDescriptors(this.name, [
+        match.detection.descriptor
+      ]);
+      this.faceMatcher = new faceapi.FaceMatcher(
+        [...this.faceMatcher.labeledDescriptors, label],
+        this.faceMatcher.distanceThreshold
+      );
     }
-    return (
-      diff > 10 ? "right" as const :
-      diff < -10 ? "left" as const :
-      "center" as const
-    );
+    return diff > 10
+      ? ("right" as const)
+      : diff < -10
+      ? ("left" as const)
+      : ("center" as const);
   }
 }

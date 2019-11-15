@@ -4,6 +4,12 @@
   box-sizing: border-box;
 }
 
+img,
+video,
+canvas {
+  max-width: 100%;
+}
+
 html,
 body {
   width: 100%;
@@ -39,4 +45,14 @@ canvas {
 
 button {
   font-size: 20px;
+}
+
+.hand {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  z-index: 10;
+  left: 0;
+  transform: translate3d(0, -50%, 0);
+  pointer-events: none;
 }
