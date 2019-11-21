@@ -81,8 +81,18 @@ export default class Player {
     const landmark = match.detection.landmarks;
     const nosePoints = landmark.getNose();
     const topNosePoint = nosePoints[0];
-    const bottomNosePoint = nosePoints[3];
-    const diff = topNosePoint.x - bottomNosePoint.x;
+
+    // Face points
+    const facePoints = landmark.getJawOutline();
+    const leftFacePoint = facePoints[0];
+    const rightFacePoint = facePoints[facePoints.length - 1];
+
+    const percentOfNosePosition = Math.abs(
+      ((rightFacePoint.x - topNosePoint.x) /
+        (leftFacePoint.x - rightFacePoint.x)) *
+        100
+    );
+
     if (match.match.distance > 0.18) {
       const label = new faceapi.LabeledFaceDescriptors(this.name, [
         match.detection.descriptor
@@ -92,10 +102,11 @@ export default class Player {
         this.faceMatcher.distanceThreshold
       );
     }
-    return diff > 10
-      ? ("right" as const)
-      : diff < -10
+
+    return percentOfNosePosition < 40
       ? ("left" as const)
+      : percentOfNosePosition > 50
+      ? ("right" as const)
       : ("center" as const);
   }
 }
