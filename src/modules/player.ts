@@ -103,9 +103,9 @@ export default class Player {
       );
     }
 
-    return percentOfNosePosition < 40
+    return percentOfNosePosition < 33.333
       ? ("left" as const)
-      : percentOfNosePosition > 50
+      : percentOfNosePosition > 66.666
       ? ("right" as const)
       : ("center" as const);
   }
