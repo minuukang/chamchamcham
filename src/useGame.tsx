@@ -72,7 +72,22 @@ function useGame() {
 }
 
 export default function useSetupGame() {
-  const { videoRef, handleVideoPlay, ...rest } = useGame();
+  const { videoRef, handleVideoPlay, position, player, ...rest } = useGame();
+  const [point, setPoint] = React.useState(0);
+  const [computerPosition, setComputerPosition] = React.useState<
+    "left" | "right" | "center"
+  >("center");
+  React.useEffect(() => {
+    if (player && position && position !== "center") {
+      const computerPosition = Math.random() > 0.5 ? "left" : "right";
+      setComputerPosition(computerPosition);
+      setPoint(
+        prevPoint => prevPoint + (computerPosition !== position ? 1 : 0)
+      );
+    } else {
+      setComputerPosition("center");
+    }
+  }, [position, player]);
   React.useEffect(() => {
     (async () => {
       if (!videoRef.current) {
@@ -96,6 +111,10 @@ export default function useSetupGame() {
   }, []);
   return {
     ...rest,
+    position,
+    computerPosition,
+    point,
+    player,
     videoRef
   };
 }

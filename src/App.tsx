@@ -6,12 +6,20 @@ import Hand from "./components/hand";
 import useGame from "./useGame";
 
 function App() {
-  const { videoRef, handlePlayGame, position, player, singleMatch } = useGame();
+  const {
+    videoRef,
+    handlePlayGame,
+    position,
+    player,
+    singleMatch,
+    point,
+    computerPosition
+  } = useGame();
   return (
     <div className="container">
-      {position && (
+      {player && (
         <div className="hand">
-          <Hand direction={position} />
+          <Hand direction={computerPosition} />
         </div>
       )}
       <div className="buttons">
@@ -29,7 +37,7 @@ function App() {
                 : position === "left"
                 ? "왼쪽"
                 : "중앙"}
-              을 보고있습니다.
+              을 보고있습니다. 현재 점수 {point}점
             </p>
           </>
         )}
