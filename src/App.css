@@ -1,7 +1,16 @@
-* {
+*,
+::before,
+::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'BMHANNAPro';
+  src: url('./resources/BMHANNAPro.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
 img,
@@ -10,10 +19,59 @@ canvas {
   max-width: 100%;
 }
 
+html {
+  font-size: 0.69vmax;
+}
+
 html,
 body {
   width: 100%;
   height: 100%;
+}
+
+@keyframes body-background-pattern {
+  from {
+    background-position-y: 0;
+  }
+
+  to {
+    background-position-y: 57px;
+  }
+}
+
+body {
+  font-family: 'BMHANNAPro', sans-serif;
+  position: relative;
+  background-color: #ffa800;
+  background-image: repeating-linear-gradient(-44.8deg,
+      transparent,
+      transparent 2rem,
+      rgba(255, 255, 255, 0.3) 2rem,
+      rgba(255, 255, 255, 0.3) 4rem);
+  animation: 1s body-background-pattern infinite linear;
+  border: 1rem solid #000;
+  overflow: hidden;
+}
+
+button {
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  clip-path: inset(2.5rem);
+  position: relative;
+  z-index: 2;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 video,
@@ -26,25 +84,13 @@ canvas {
   left: 0;
 }
 
+video {
+  z-index: -1;
+}
+
 canvas {
-  z-index: 1;
-}
-
-.buttons {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  color: white;
-  text-align: center;
-  font-size: 15px;
-  line-height: 1.5;
-  text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.55);
-}
-
-button {
-  font-size: 20px;
+  z-index: 3;
+  pointer-events: none;
 }
 
 .hand {
@@ -53,6 +99,6 @@ button {
   top: 50%;
   z-index: 10;
   left: 0;
-  transform: translate3d(0, -50%, 0) scale(0.5);
+  transform: translate3d(0, -50%, 0) scale(0.75);
   pointer-events: none;
 }

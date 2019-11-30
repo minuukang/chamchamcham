@@ -1,9 +1,17 @@
-import React from "react";
-import "./App.css";
-import Hand from "./components/hand";
+import React from 'react';
+import './App.css';
 
 // Hooks
-import useGame from "./useGame";
+import useGame from './useGame';
+
+// Pages
+import RankingPage from './pages/ranking';
+import GameEndPage from './pages/gameEnd';
+import GameStartPage from './pages/gameStart';
+import InGamePage from './pages/inGame';
+
+// Components
+import { Container, ToastMessage } from './styledComponents';
 
 function App() {
   const {
@@ -13,37 +21,38 @@ function App() {
     player,
     singleMatch,
     point,
-    computerPosition
+    page,
+    computerPosition,
+    toastMessage,
+    handleGoHome,
+    handleGoRanking,
+    gamePlayId,
   } = useGame();
   return (
-    <div className="container">
-      {player && (
-        <div className="hand">
-          <Hand direction={computerPosition} />
-        </div>
-      )}
-      <div className="buttons">
-        {!player && (
-          <button onClick={handlePlayGame} disabled={!singleMatch}>
-            게임시작
-          </button>
-        )}
-        {player && singleMatch && (
-          <>
-            <p>{player.name}</p>
-            <p>
-              {position === "right"
-                ? "오른쪽"
-                : position === "left"
-                ? "왼쪽"
-                : "중앙"}
-              을 보고있습니다. 현재 점수 {point}점
-            </p>
-          </>
-        )}
-      </div>
+    <>
+      <Container>
+        {toastMessage && <ToastMessage>{toastMessage}</ToastMessage>}
+        {page === 'main' ? (
+          <GameStartPage
+            startDisabled={!singleMatch}
+            onStartClick={handlePlayGame}
+            onRankingClick={handleGoRanking}
+          />
+        ) : page === 'ranking' ? (
+          <RankingPage onHomeClick={handleGoHome} />
+        ) : page === 'in-game' ? (
+          <InGamePage
+            point={point}
+            computerPosition={computerPosition}
+            player={player!}
+            position={position!}
+          />
+        ) : page === 'end' ? (
+          <GameEndPage onHomeClick={handleGoHome} gamePlayId={gamePlayId!} />
+        ) : null}
+      </Container>
       <video autoPlay={true} playsInline={true} ref={videoRef} />
-    </div>
+    </>
   );
 }
 

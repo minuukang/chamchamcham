@@ -8,6 +8,7 @@
     "@types/node": "12.11.6",
     "@types/react": "16.9.9",
     "@types/react-dom": "16.9.2",
+    "dayjs": "^1.8.17",
     "face-api.js": "^0.21.0",
     "localforage": "^1.7.3",
     "react": "^16.11.0",
@@ -35,5 +36,14 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/animejs": "^3.1.0",
+    "@types/shortid": "0.0.29",
+    "@types/styled-components": "^4.4.0",
+    "animejs": "^3.1.0",
+    "prettier": "^1.19.1",
+    "shortid": "^2.2.15",
+    "styled-components": "^4.4.1"
   }
 }
