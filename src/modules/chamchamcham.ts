@@ -2,8 +2,14 @@ import * as faceapi from 'face-api.js';
 
 const MODEL_URL = '/models';
 
-export type C3FaceMatch = NonNullable<
-  ThenArg<ReturnType<typeof ChamChamCham.prototype.getDetectSingleFace>>
+export type C3FaceMatch = faceapi.WithAge<
+  faceapi.WithGender<
+    faceapi.WithFaceExpressions<
+      faceapi.WithFaceDescriptor<
+        faceapi.WithFaceLandmarks<faceapi.WithFaceDetection<{}>>
+      >
+    >
+  >
 >;
 
 export default class ChamChamCham {
@@ -57,9 +63,8 @@ export default class ChamChamCham {
   }
 
   public getMatchFacePosition(
-    detection: NonNullable<
-      ThenArg<ReturnType<typeof ChamChamCham.prototype.getDetectSingleFace>>
-    >
+    detection: C3FaceMatch,
+    allowable: number = 33.333
   ) {
     const landmark = detection.landmarks;
 
@@ -84,9 +89,9 @@ export default class ChamChamCham {
         100
     );
 
-    return percentOfNosePosition < 33.333
+    return percentOfNosePosition < allowable
       ? ('left' as const)
-      : percentOfNosePosition > 66.666
+      : percentOfNosePosition > 100 - allowable
       ? ('right' as const)
       : ('center' as const);
   }
