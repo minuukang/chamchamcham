@@ -1,37 +1,10 @@
 import * as faceapi from 'face-api.js';
 import shortid from 'shortid';
 import ChamChamCham, { C3FaceMatch } from './chamchamcham';
+import createImageFromFaceMatch from '../helpers/createImageFromFaceMatch';
+import createNameFromFaceMatch from '../helpers/createNameFromFaceMatch';
 
 export const maxDescriptorDistance = 0.4;
-
-function createImageFromFaceMatch(
-  match: C3FaceMatch,
-  input: HTMLVideoElement
-): Promise<Blob> {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.floor(match.detection.box.width);
-    canvas.height = Math.floor(match.detection.box.height);
-    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-    context.drawImage(
-      input,
-      Math.floor(match.detection.box.left),
-      Math.floor(match.detection.box.top),
-      canvas.width,
-      canvas.height,
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-    canvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-      }
-    });
-  });
-}
-
 export default class Player {
   public readonly name: string;
   private faceMatcher: faceapi.FaceMatcher;
@@ -43,9 +16,7 @@ export default class Player {
     private readonly match: C3FaceMatch,
     faceMatcher?: faceapi.FaceMatcher
   ) {
-    this.name = `${Math.floor(match.age)}살 미경 ${
-      match.gender === 'male' ? '남자' : '여자'
-    }`;
+    this.name = createNameFromFaceMatch(match);
     const label = new faceapi.LabeledFaceDescriptors(shortid.generate(), [
       match.descriptor,
     ]);
@@ -73,11 +44,10 @@ export default class Player {
     return this.faceMatcher.labeledDescriptors[0].label;
   }
 
-  public async saveBestMatch(
-    faceMatch: NonNullable<
-      ThenArg<ReturnType<typeof Player.prototype.getBestMatch>>
-    > | null
-  ) {
+  public async saveBestMatch(faceMatch: {
+    detection: C3FaceMatch;
+    match: faceapi.FaceMatch;
+  }) {
     if (faceMatch && faceMatch.match.distance > 0.18) {
       const label = new faceapi.LabeledFaceDescriptors(this.labelName, [
         faceMatch.detection.descriptor,
