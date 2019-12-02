@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Title, HomeButton } from '../styledComponents';
 import RankingPage from '../components/ranks';
 import styled from 'styled-components';
+import AudioPlayerContext from '../contexts/audioPlayer';
+import useButtonAudio from '../useButtonAudio';
 
 interface IProps {
   onHomeClick(): void;
@@ -27,14 +29,25 @@ const Content = styled.div`
   margin: 50px 0;
 `;
 
-export default function Ranking(props: IProps) {
+export default function Ranking({ gamePlayId, onHomeClick }: IProps) {
+  const audioPlayer = React.useContext(AudioPlayerContext);
+  React.useEffect(() => {
+    audioPlayer.play('lose-laugh');
+  }, []);
+  const { handleClick, handleHover } = useButtonAudio();
+  const handleHomeClick = React.useCallback(() => {
+    handleClick();
+    onHomeClick();
+  }, [onHomeClick, handleClick]);
   return (
     <Container>
       <Title title="GAME OVER">GAME OVER</Title>
       <Content>
-        <RankingPage mineId={props.gamePlayId} />
+        <RankingPage mineId={gamePlayId} />
       </Content>
-      <HomeButton onClick={props.onHomeClick}>처음으로</HomeButton>
+      <HomeButton onMouseEnter={handleHover} onClick={handleHomeClick}>
+        처음으로
+      </HomeButton>
     </Container>
   );
 }

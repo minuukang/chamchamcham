@@ -1,9 +1,10 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { Title, Button, TrophyButton } from '../styledComponents';
 import { IGameDrawHandler } from '../useGame';
 import { C3FaceMatch } from '../modules/chamchamcham';
 import { FacePosition } from '../types';
+import useButtonAudio from '../useButtonAudio';
 
 interface IProps {
   onStartClick(faceMatch: C3FaceMatch): void;
@@ -21,6 +22,30 @@ const Container = styled.div`
   padding: 120px 0 80px;
   justify-content: space-between;
 `;
+
+const animeLetterKeyframe = keyframes`
+  from {
+    transform: scale(1, 1);
+  }
+  to {
+    transform: scale(1, 1.1);
+  }
+`;
+
+const AnimeTitle = styled(Title)`
+  display: inline-block;
+  transform-origin: 50% 100%;
+  animation: ${animeLetterKeyframe} 500ms infinite alternate-reverse;
+  ${Array.from(new Array(3))
+    .map((_, index) => {
+      return `&:nth-of-type(${index + 1}) {
+      animation-delay: ${index * 200}ms;
+    }`;
+    })
+    .join('\n')}
+`;
+
+const TitleWrapper = styled.hgroup``;
 
 export default function GameStartPage(props: IProps) {
   const {
@@ -65,16 +90,33 @@ export default function GameStartPage(props: IProps) {
       setToastMessage(null);
     };
   }, []);
+  const { handleClick, handleHover } = useButtonAudio();
   const handleStartClick = React.useCallback(() => {
     if (startFace) {
+      handleClick();
       onStartClick(startFace);
     }
-  }, [startFace]);
+  }, [startFace, onStartClick, handleClick]);
+  const handleRankingClick = React.useCallback(() => {
+    handleClick();
+    onRankingClick();
+  }, [handleClick, onRankingClick]);
   return (
     <Container>
-      <TrophyButton title="랭킹" onClick={onRankingClick} />
-      <Title title="참참참">참참참</Title>
-      <Button disabled={!startFace} onClick={handleStartClick}>
+      <TrophyButton
+        onMouseEnter={handleHover}
+        title="랭킹"
+        onClick={handleRankingClick}
+      />
+      <TitleWrapper>
+        <AnimeTitle title="참">참</AnimeTitle>
+        <AnimeTitle title="참">참</AnimeTitle>
+        <AnimeTitle title="참">참</AnimeTitle>
+      </TitleWrapper>
+      <Button
+        disabled={!startFace}
+        onMouseEnter={handleHover}
+        onClick={handleStartClick}>
         시작하기
       </Button>
     </Container>

@@ -7,6 +7,7 @@ import leftMovingImage from '../resources/left-moving.png';
 import leftImage from '../resources/left.png';
 import rightMovingImage from '../resources/right-moving.png';
 import rightImage from '../resources/right.png';
+import AudioPlayerContext from '../contexts/audioPlayer';
 
 type Direction = 'center' | 'right' | 'left';
 
@@ -52,10 +53,14 @@ interface IProps {
 }
 
 function Hand({ direction }: IProps) {
+  const audioPlayer = React.useContext(AudioPlayerContext);
   const [currentImage, setCurrentImage] = React.useState(centerImage);
   const prevDirection = usePrevious(direction);
   React.useEffect(() => {
     if (prevDirection && prevDirection !== direction) {
+      if (direction !== 'center') {
+        audioPlayer.play('throw-sound');
+      }
       return moveHandAnimation(prevDirection, direction, setCurrentImage);
     }
   }, [direction]);

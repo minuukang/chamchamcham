@@ -12,7 +12,7 @@ export const Container = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-size: 12rem;
+  font-size: 13.5rem;
   color: #fff;
   position: relative;
   z-index: 3;
@@ -60,7 +60,14 @@ export const TrophyButton = styled.button`
   background-repeat: no-repeat;
   width: 9rem;
   height: 9rem;
+  transition: all 300ms;
   z-index: 3;
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(1);
+  }
   &::after {
     display: block;
     white-space: nowrap;
@@ -99,6 +106,12 @@ export const Button = styled.button`
   text-shadow: 3px 3px 0 #000;
   transition: all 300ms;
   overflow: hidden;
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(1);
+  }
   &::after {
     display: block;
     position: absolute;
