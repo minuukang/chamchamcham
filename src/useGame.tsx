@@ -118,8 +118,10 @@ export default function useSetupGame() {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: false,
           video: {
-            width: 640,
-            height: 480,
+            width: { min: 640, ideal: 1920, max: 1920 },
+            height: { min: 400, ideal: 1080 },
+            aspectRatio: 1.777777778,
+            frameRate: { max: 30 },
             facingMode: 'user',
           },
         });

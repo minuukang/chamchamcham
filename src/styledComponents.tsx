@@ -106,7 +106,7 @@ export const Button = styled.button`
   text-shadow: 3px 3px 0 #000;
   transition: all 300ms;
   overflow: hidden;
-  &:hover {
+  &:not(:disabled):hover {
     transform: scale(1.1);
   }
   &:active {
@@ -142,29 +142,13 @@ export const HomeButton = styled(Button)`
   }
 `;
 
-export const RankingModal = styled.div`
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: 200;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-`;
-
-export const Modal = ({ children }: React.PropsWithChildren<{}>) => {
-  return ReactDOM.createPortal(
-    <RankingModal>{children}</RankingModal>,
-    document.getElementById('modal')!
-  );
-};
-
 export const ToastMessage = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate3d(-50%, -50%, 0);
   font-size: 5rem;
+  text-align: center;
   background-color: rgba(0, 0, 0, 0.7);
   padding: 1rem;
   border-radius: 0.5rem;

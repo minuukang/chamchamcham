@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IRank } from '../api/rank';
+import { IRank, IFormatRank } from '../api/rank';
 import styled, { css } from 'styled-components';
 import trophyGold from '../resources/trophy-gold.svg';
 import trophySilver from '../resources/trophy-silver.svg';
@@ -110,11 +110,6 @@ const Wrapper = styled.div<{ mine: boolean }>`
       }
     `}
 `;
-
-export interface IFormatRank extends IRank {
-  joint: number;
-  rank: number;
-}
 
 interface IProps {
   rank: IFormatRank;

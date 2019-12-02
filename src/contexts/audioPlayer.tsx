@@ -1,7 +1,13 @@
 import * as React from 'react';
 
 type VoiceId = 'hello';
-type SoundId = 'lose-laugh' | 'mouth-pop' | 'pipe-sound' | 'throw-sound';
+type SoundId =
+  | 'lose-laugh'
+  | 'mouth-pop'
+  | 'pipe-sound'
+  | 'throw-sound'
+  | 'wow'
+  | 'whooo';
 
 const voiceMapper: Record<VoiceId, string> = {
   hello: '안녕하세요',
@@ -13,6 +19,8 @@ const soundMapper: Record<SoundId, string> = {
   'mouth-pop': require('../resources/sounds/mouth-pop.wav'),
   'pipe-sound': require('../resources/sounds/pipe.wav'),
   'throw-sound': require('../resources/sounds/throw.wav'),
+  wow: require('../resources/sounds/wow.wav'),
+  whooo: require('../resources/sounds/whooo.wav'),
 };
 
 interface IAudioPlayerContext {

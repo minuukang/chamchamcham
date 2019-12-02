@@ -4,6 +4,7 @@ import RankingPage from '../components/ranks';
 import styled from 'styled-components';
 import AudioPlayerContext from '../contexts/audioPlayer';
 import useButtonAudio from '../useButtonAudio';
+import { getFormatRankById } from '../api/rank';
 
 interface IProps {
   onHomeClick(): void;
@@ -32,7 +33,10 @@ const Content = styled.div`
 export default function Ranking({ gamePlayId, onHomeClick }: IProps) {
   const audioPlayer = React.useContext(AudioPlayerContext);
   React.useEffect(() => {
-    audioPlayer.play('lose-laugh');
+    (async () => {
+      const rank = await getFormatRankById(gamePlayId);
+      audioPlayer.play(rank && rank.joint < 3 ? 'whooo' : 'lose-laugh');
+    })();
   }, []);
   const { handleClick, handleHover } = useButtonAudio();
   const handleHomeClick = React.useCallback(() => {

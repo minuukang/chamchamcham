@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { getRankings, IRank } from '../api/rank';
-import RankItem, { IFormatRank } from './rankItem';
+import { getFormatRankings, IFormatRank } from '../api/rank';
+import RankItem from './rankItem';
 import styled from 'styled-components';
 import anime from 'animejs';
 
@@ -37,28 +37,11 @@ export default function RankingPage(props: IProps) {
   const [isLoading, setLoading] = React.useState(false);
   const scrollerRef = React.useRef<HTMLDivElement>(null);
   const mineItemRef = React.useRef<HTMLDivElement>(null);
-  const [ranks, setRanks] = React.useState<IRank[]>(() => []);
-  const formatRanks = React.useMemo(() => {
-    const sortRank = ranks.slice().sort((a, b) => {
-      return b.point - a.point;
-    });
-    const rankMap = sortRank.reduce((map, rank) => {
-      map.set(rank.point, 1 + (map.get(rank.point) || 0));
-      return map;
-    }, new Map<number, number>());
-    const rankMapKeys = Array.from(rankMap.keys());
-    return sortRank.map<IFormatRank>((rank, _index, allRanks) => {
-      return {
-        ...rank,
-        joint: rankMapKeys.indexOf(rank.point),
-        rank: allRanks.findIndex(({ point }) => point === rank.point),
-      };
-    });
-  }, [ranks]);
+  const [ranks, setRanks] = React.useState<IFormatRank[]>(() => []);
   React.useEffect(() => {
     setLoading(true);
     (async () => {
-      setRanks(await getRankings());
+      setRanks(await getFormatRankings());
       setLoading(false);
     })();
   }, []);
@@ -80,9 +63,9 @@ export default function RankingPage(props: IProps) {
     <Wrapper>
       {isLoading ? (
         <Message>로딩 중입니다...</Message>
-      ) : formatRanks.length ? (
+      ) : ranks.length ? (
         <Scroller ref={scrollerRef}>
-          {formatRanks.map((rank) => (
+          {ranks.map((rank) => (
             <RankItem
               rank={rank}
               key={rank.id}

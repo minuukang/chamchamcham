@@ -57,36 +57,31 @@ export default function GameStartPage(props: IProps) {
   const [position, setPosition] = React.useState<FacePosition | null>();
   const [startFace, setStartFace] = React.useState<C3FaceMatch | null>(null);
   React.useEffect(() => {
-    if (position) {
-      if (position === 'center') {
-        setToastMessage(null);
-      } else {
+    if (position && startFace && position === 'center') {
+      setToastMessage(null);
+    } else {
+      if (startFace && position !== 'center') {
         setToastMessage('중앙을 바라봐주세요');
+      } else {
+        setToastMessage('얼굴을 인식할 수 없습니다.');
       }
     }
-  }, [position]);
+  }, [position, startFace]);
   React.useEffect(() => {
-    let timer: number = 0;
     gameDrawHandlerRef.current = async ({ c3 }) => {
       const detection = await c3.getDetectSingleFace();
       if (detection) {
-        const facePosition = c3.getMatchFacePosition(detection);
+        const facePosition = c3.getMatchFacePositionType(detection);
         setPosition(facePosition);
-        setStartFace(facePosition === 'center' ? detection : null);
-        window.clearTimeout(timer);
-        timer = 0;
+        setStartFace(detection);
         c3.drawLandmark(detection);
-      } else if (!timer) {
-        timer = window.setTimeout(() => {
-          setToastMessage('얼굴을 찾고 있습니다.');
-          setStartFace(null);
-          c3.clear();
-        }, 1000);
+      } else {
+        c3.clear();
+        setStartFace(null);
       }
     };
     return () => {
       gameDrawHandlerRef.current = undefined;
-      window.clearTimeout(timer);
       setToastMessage(null);
     };
   }, []);
@@ -101,6 +96,7 @@ export default function GameStartPage(props: IProps) {
     handleClick();
     onRankingClick();
   }, [handleClick, onRankingClick]);
+  const disabledStart = !Boolean(startFace && position === 'center');
   return (
     <Container>
       <TrophyButton
@@ -114,8 +110,8 @@ export default function GameStartPage(props: IProps) {
         <AnimeTitle title="참">참</AnimeTitle>
       </TitleWrapper>
       <Button
-        disabled={!startFace}
-        onMouseEnter={handleHover}
+        disabled={disabledStart}
+        onMouseEnter={!disabledStart ? handleHover : undefined}
         onClick={handleStartClick}>
         시작하기
       </Button>

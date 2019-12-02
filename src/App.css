@@ -82,6 +82,7 @@ canvas {
   height: auto;
   top: 50%;
   left: 0;
+  pointer-events: none;
 }
 
 video {
@@ -89,8 +90,7 @@ video {
 }
 
 canvas {
-  z-index: 3;
-  pointer-events: none;
+  z-index: 15;
 }
 
 .hand {

@@ -7,6 +7,7 @@ import { addRanking } from '../api/rank';
 import { setBestMatchCollection } from '../api/face';
 import usePrevious from '../helpers/usePrevious';
 import AudioPlayerContext from '../contexts/audioPlayer';
+import { FacePosition } from '../types';
 
 interface IProps {
   gameDrawHandlerRef: React.MutableRefObject<IGameDrawHandler | undefined>;
@@ -22,17 +23,21 @@ export default function InGamePage({
   handleGameEnd,
 }: IProps) {
   const audio = React.useContext(AudioPlayerContext);
-  const [position, setPosition] = React.useState<'center' | 'left' | 'right'>(
+  const [position, setPosition] = React.useState<FacePosition | null>('center');
+  const [computerPosition, setComputerPosition] = React.useState<FacePosition>(
     'center'
   );
-  const [computerPosition, setComputerPosition] = React.useState<
-    'center' | 'left' | 'right'
-  >('center');
   const [point, setPoint] = React.useState(0);
   const prevPosition = usePrevious(position);
   React.useEffect(() => {
+    if (point) {
+      audio.play('wow');
+    }
+  }, [point]);
+  React.useEffect(() => {
     let timer = 0;
-    if (position !== 'center' && prevPosition === 'center') {
+    if (position && position !== 'center' && prevPosition === 'center') {
+      setToastMessage(null);
       const weight = 1 - (1 + point) / 20;
       const playerWin = Math.random() < (weight > 0.5 ? weight : 0.5);
       if (playerWin) {
@@ -54,39 +59,30 @@ export default function InGamePage({
       }
     } else {
       if (prevPosition !== 'center' && position === 'center') {
+        setToastMessage(null);
         timer = setTimeout(() => {
           audio.speak('참참참');
         }, 1500);
+      } else if (!position) {
+        setToastMessage('얼굴을 기울이거나 가리지 말아주세요.');
       }
       setComputerPosition('center');
     }
     return () => clearTimeout(timer);
   }, [position]);
   React.useEffect(() => {
-    let timer = 0;
     gameDrawHandlerRef.current = async ({ c3, player }) => {
       const bestMatch = await player.getBestMatch();
       if (bestMatch) {
         c3.drawLandmark(bestMatch.detection);
-        window.clearTimeout(timer);
-        timer = 0;
-        const facePosition = c3.getMatchFacePosition(bestMatch.detection);
-        if (facePosition === null) {
-          setToastMessage('제대로 화면을 바라봐주세요');
-        } else {
-          setToastMessage(null);
-          setPosition(facePosition);
-        }
-      } else if (!timer) {
-        timer = window.setTimeout(() => {
-          c3.clear();
-          setToastMessage('얼굴을 인식하지 못하고 있습니다.');
-        }, 1000);
+        const facePosition = c3.getMatchFacePositionType(bestMatch.detection);
+        setPosition(facePosition);
+      } else {
+        c3.clear();
       }
     };
     return () => {
       setToastMessage(null);
-      window.clearTimeout(timer);
       gameDrawHandlerRef.current = undefined;
     };
   }, []);

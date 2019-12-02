@@ -62,10 +62,22 @@ export default class ChamChamCham {
     return (rad * 180) / Math.PI;
   }
 
-  public getMatchFacePosition(
+  public getMatchFacePositionType(
     detection: C3FaceMatch,
     allowable: number = 33.333
   ) {
+    const { nosePosition, faceDegree } = this.getMatchFacePosition(detection);
+    if (faceDegree > 20) {
+      return null;
+    }
+    return nosePosition < allowable
+      ? ('left' as const)
+      : nosePosition > 100 - allowable
+      ? ('right' as const)
+      : ('center' as const);
+  }
+
+  public getMatchFacePosition(detection: C3FaceMatch) {
     const landmark = detection.landmarks;
 
     const nosePoints = landmark.getNose();
@@ -76,10 +88,6 @@ export default class ChamChamCham {
 
     // Check face is not a center alignment
     const middleFacePoint = facePoints[Math.floor(facePoints.length / 2)];
-    if (Math.abs(this.getTwoPointDegree(topNosePoint, middleFacePoint)) > 15) {
-      return null;
-    }
-
     const leftFacePoint = facePoints[0];
     const rightFacePoint = facePoints[facePoints.length - 1];
 
@@ -89,11 +97,12 @@ export default class ChamChamCham {
         100
     );
 
-    return percentOfNosePosition < allowable
-      ? ('left' as const)
-      : percentOfNosePosition > 100 - allowable
-      ? ('right' as const)
-      : ('center' as const);
+    return {
+      faceDegree: Math.abs(
+        this.getTwoPointDegree(topNosePoint, middleFacePoint)
+      ),
+      nosePosition: percentOfNosePosition,
+    };
   }
 
   public clear() {
