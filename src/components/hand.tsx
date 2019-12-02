@@ -1,4 +1,5 @@
 import * as React from 'react';
+import styled from 'styled-components';
 import usePrevious from '../helpers/usePrevious';
 
 // Resources
@@ -52,6 +53,16 @@ interface IProps {
   direction: Direction;
 }
 
+const HandWrapper = styled.div`
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  z-index: 10;
+  left: 0;
+  transform: translate3d(0, -50%, 0) scale(0.75);
+  pointer-events: none;
+`;
+
 function Hand({ direction }: IProps) {
   const audioPlayer = React.useContext(AudioPlayerContext);
   const [currentImage, setCurrentImage] = React.useState(centerImage);
@@ -64,7 +75,11 @@ function Hand({ direction }: IProps) {
       return moveHandAnimation(prevDirection, direction, setCurrentImage);
     }
   }, [direction]);
-  return <img src={currentImage} alt="Hand" />;
+  return (
+    <HandWrapper>
+      <img src={currentImage} alt="Hand" />
+    </HandWrapper>
+  );
 }
 
 export default Hand;

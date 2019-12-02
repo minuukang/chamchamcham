@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import GlobalStyle from './globalStyle';
 
 // Contexts
 import { Provider as AudioPlayerProvider } from './contexts/audioPlayer';
@@ -34,6 +34,7 @@ function App() {
   } = useGame();
   return (
     <AudioPlayerProvider>
+      <GlobalStyle />
       <Container>
         {toastMessage && <ToastMessage>{toastMessage}</ToastMessage>}
         {page === 'main' ? (

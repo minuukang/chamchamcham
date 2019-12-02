@@ -1,7 +1,5 @@
-import 'dayjs/locale/ko';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import ChamChamCham from './modules/chamchamcham';
 
