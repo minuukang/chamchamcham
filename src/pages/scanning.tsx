@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { IGameDrawHandler } from '../useGame';
 import AudioPlayerContext from '../contexts/audioPlayer';
-import { FacePosition } from '../types';
-import usePrevious from '../helpers/usePrevious';
 
 interface IProps {
   setToastMessage: React.Dispatch<string | null>;
@@ -20,7 +18,6 @@ export default function ScanningPage({
     nosePosition: number;
     faceDegree: number;
   } | null>(null);
-  const prevFaceData = usePrevious(faceData);
   const [successPosition, setSuccessPosition] = React.useState(() => ({
     left: false,
     right: false,

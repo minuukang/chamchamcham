@@ -5,7 +5,7 @@ import C3Player from '../modules/player';
 import { IGameDrawHandler } from '../useGame';
 import { addRanking } from '../api/rank';
 import { setBestMatchCollection } from '../api/face';
-import usePrevious from '../helpers/usePrevious';
+import { usePrevious } from 'react-use';
 import AudioPlayerContext from '../contexts/audioPlayer';
 import { FacePosition } from '../types';
 

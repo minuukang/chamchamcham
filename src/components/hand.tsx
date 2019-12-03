@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import usePrevious from '../helpers/usePrevious';
+import { usePrevious } from 'react-use';
 
 // Resources
 import centerImage from '../resources/middle.png';
