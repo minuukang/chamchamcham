@@ -13,7 +13,7 @@ export default function ScanningPage({
   handlePlayGame,
   gameDrawHandlerRef,
 }: IProps) {
-  const audio = React.useContext(AudioPlayerContext);
+  const audioPlayer = React.useContext(AudioPlayerContext);
   const [faceData, setFaceData] = React.useState<{
     nosePosition: number;
     faceDegree: number;
@@ -26,24 +26,25 @@ export default function ScanningPage({
     if (!faceData || faceData.faceDegree > 20) {
       return null;
     }
-    return faceData.nosePosition > 40 && faceData.nosePosition < 60
+    return faceData.nosePosition > 25 && faceData.nosePosition < 75
       ? 'center'
-      : faceData.nosePosition > 20 && faceData.nosePosition < 40
+      : faceData.nosePosition > 10 && faceData.nosePosition < 25
       ? 'semi-left'
-      : faceData.nosePosition < 20
+      : faceData.nosePosition < 10
       ? 'left'
-      : faceData.nosePosition > 60 && faceData.nosePosition < 80
+      : faceData.nosePosition > 75 && faceData.nosePosition < 90
       ? 'semi-right'
-      : faceData.nosePosition > 80
+      : faceData.nosePosition > 90
       ? 'right'
       : null;
   }, [faceData]);
   const speakAndToast = (message: string | null) => {
-    message && audio.speak(message);
+    message && audioPlayer.speak(message);
     setToastMessage(message);
   };
   const timerRef = React.useRef<number>();
   React.useEffect(() => {
+    audioPlayer.stop('start-bgm');
     gameDrawHandlerRef.current = async ({ c3, player }) => {
       const bestMatch = await player.getBestMatch();
       if (bestMatch) {

@@ -1,10 +1,16 @@
 import * as React from 'react';
-import styled, { keyframes } from 'styled-components';
-import { Title, Button, TrophyButton } from '../styledComponents';
+import styled from 'styled-components';
+import {
+  Button,
+  TrophyButton,
+  TitleWrapper,
+  AnimeTitle,
+} from '../styledComponents';
 import { IGameDrawHandler } from '../useGame';
 import { C3FaceMatch } from '../modules/chamchamcham';
 import { FacePosition } from '../types';
 import useButtonAudio from '../useButtonAudio';
+import AudioPlayerContext from '../contexts/audioPlayer';
 
 interface IProps {
   onStartClick(faceMatch: C3FaceMatch): void;
@@ -23,30 +29,6 @@ const Container = styled.div`
   justify-content: space-between;
 `;
 
-const animeLetterKeyframe = keyframes`
-  from {
-    transform: scale(1, 1);
-  }
-  to {
-    transform: scale(1, 1.1);
-  }
-`;
-
-const AnimeTitle = styled(Title)`
-  display: inline-block;
-  transform-origin: 50% 100%;
-  animation: ${animeLetterKeyframe} 500ms infinite alternate-reverse;
-  ${Array.from(new Array(3))
-    .map((_, index) => {
-      return `&:nth-of-type(${index + 1}) {
-      animation-delay: ${index * 200}ms;
-    }`;
-    })
-    .join('\n')}
-`;
-
-const TitleWrapper = styled.hgroup``;
-
 export default function GameStartPage(props: IProps) {
   const {
     gameDrawHandlerRef,
@@ -54,6 +36,7 @@ export default function GameStartPage(props: IProps) {
     onStartClick,
     setToastMessage,
   } = props;
+  const audioPlayer = React.useContext(AudioPlayerContext);
   const [position, setPosition] = React.useState<FacePosition | null>();
   const [startFace, setStartFace] = React.useState<C3FaceMatch | null>(null);
   React.useEffect(() => {
@@ -68,6 +51,7 @@ export default function GameStartPage(props: IProps) {
     }
   }, [position, startFace]);
   React.useEffect(() => {
+    audioPlayer.play('start-bgm', { loop: true });
     gameDrawHandlerRef.current = async ({ c3 }) => {
       const detection = await c3.getDetectSingleFace();
       if (detection) {

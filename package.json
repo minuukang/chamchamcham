@@ -22,10 +22,10 @@
     "typescript": "^3.7.2"
   },
   "scripts": {
-    "start": "HTTPS=true react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "HTTPS=true react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -43,7 +43,10 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.7.4",
     "@types/jest": "24.0.19",
-    "prettier": "^1.19.1"
+    "customize-cra": "^0.9.1",
+    "prettier": "^1.19.1",
+    "react-app-rewired": "^2.1.5"
   }
 }

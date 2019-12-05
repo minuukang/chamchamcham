@@ -67,7 +67,7 @@ export default class ChamChamCham {
     allowable: number = 33.333
   ) {
     const { nosePosition, faceDegree } = this.getMatchFacePosition(detection);
-    if (faceDegree > 20) {
+    if (faceDegree > 25) {
       return null;
     }
     return nosePosition < allowable

@@ -37,6 +37,11 @@ export default function Ranking({ gamePlayId, onHomeClick }: IProps) {
       const rank = await getFormatRankById(gamePlayId);
       audioPlayer.play(rank && rank.joint < 3 ? 'whooo' : 'lose-laugh');
     })();
+    audioPlayer.stop();
+    audioPlayer.play('end-game', { loop: true });
+    return () => {
+      audioPlayer.stop();
+    };
   }, []);
   const { handleClick, handleHover } = useButtonAudio();
   const handleHomeClick = React.useCallback(() => {

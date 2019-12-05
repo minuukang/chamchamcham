@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IRank, IFormatRank } from '../api/rank';
+import { IFormatRank } from '../api/rank';
 import styled, { css } from 'styled-components';
 import trophyGold from '../resources/trophy-gold.svg';
 import trophySilver from '../resources/trophy-silver.svg';

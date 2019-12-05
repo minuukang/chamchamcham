@@ -1,6 +1,4 @@
-import styled from 'styled-components';
-import * as ReactDOM from 'react-dom';
-import * as React from 'react';
+import styled, { keyframes } from 'styled-components';
 import trophyImage from './resources/trophy.svg';
 import homeIcon from './resources/home-icon.png';
 
@@ -156,3 +154,27 @@ export const ToastMessage = styled.div`
   z-index: 999;
   pointer-events: none;
 `;
+
+const animeLetterKeyframe = keyframes`
+  from {
+    transform: scale(1, 1);
+  }
+  to {
+    transform: scale(1, 1.1);
+  }
+`;
+
+export const AnimeTitle = styled(Title)`
+  display: inline-block;
+  transform-origin: 50% 100%;
+  animation: ${animeLetterKeyframe} 500ms infinite alternate-reverse;
+  ${Array.from(new Array(4))
+    .map((_, index) => {
+      return `&:nth-of-type(${index + 1}) {
+      animation-delay: ${index * 200}ms;
+    }`;
+    })
+    .join('\n')}
+`;
+
+export const TitleWrapper = styled.hgroup``;

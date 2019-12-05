@@ -4,7 +4,7 @@ import ChamChamCham, { C3FaceMatch } from './chamchamcham';
 import createImageFromFaceMatch from '../helpers/createImageFromFaceMatch';
 import createNameFromFaceMatch from '../helpers/createNameFromFaceMatch';
 
-export const maxDescriptorDistance = 0.4;
+export const maxDescriptorDistance = 0.5;
 export default class Player {
   public readonly name: string;
   private faceMatcher: faceapi.FaceMatcher;
@@ -48,7 +48,7 @@ export default class Player {
     detection: C3FaceMatch;
     match: faceapi.FaceMatch;
   }) {
-    if (faceMatch && faceMatch.match.distance > 0.18) {
+    if (faceMatch && faceMatch.match.distance > 0.15) {
       const label = new faceapi.LabeledFaceDescriptors(this.labelName, [
         faceMatch.detection.descriptor,
       ]);

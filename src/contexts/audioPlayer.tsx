@@ -7,11 +7,11 @@ type SoundId =
   | 'pipe-sound'
   | 'throw-sound'
   | 'wow'
+  | 'error'
+  | 'in-game'
+  | 'end-game'
+  | 'start-bgm'
   | 'whooo';
-
-const voiceMapper: Record<VoiceId, string> = {
-  hello: '안녕하세요',
-};
 
 // Sounds
 const soundMapper: Record<SoundId, string> = {
@@ -19,13 +19,22 @@ const soundMapper: Record<SoundId, string> = {
   'mouth-pop': require('../resources/sounds/mouth-pop.wav'),
   'pipe-sound': require('../resources/sounds/pipe.wav'),
   'throw-sound': require('../resources/sounds/throw.wav'),
+  'start-bgm': require('../resources/sounds/start-bgm.mp3'),
+  'in-game': require('../resources/sounds/in-game.mp3'),
+  'end-game': require('../resources/sounds/end-game.mp3'),
   wow: require('../resources/sounds/wow.wav'),
+  error: require('../resources/sounds/error.wav'),
   whooo: require('../resources/sounds/whooo.wav'),
 };
 
+interface IAudioPlayOption {
+  loop?: boolean;
+}
+
 interface IAudioPlayerContext {
   speak(id: VoiceId | string): void;
-  play(id: SoundId): void;
+  play(id: SoundId, options?: IAudioPlayOption): void;
+  stop(id?: SoundId): void;
 }
 
 const AudioPlayerContext = React.createContext({} as IAudioPlayerContext);
@@ -40,19 +49,32 @@ export const Provider = ({ children }: React.PropsWithChildren<{}>) => {
       const utter = new SpeechSynthesisUtterance(speakId);
       speechSynthesis.cancel();
       speechSynthesis.speak(utter);
-      utter.onend = () => {
+      utter.onstart = () => {
         setSpeakId(null);
       };
     }
   }, [speakId]);
-  const handlePlayMusic = (id: SoundId) => {
-    if (id in soundMapper && soundWrapperRef.current) {
-      const audio: HTMLAudioElement | null = soundWrapperRef.current.querySelector(
-        `[data-id="${id}"]`
-      );
+  const getAudioElement = (id: SoundId): HTMLAudioElement | null => {
+    return soundWrapperRef.current?.querySelector(`[data-id="${id}"]`) || null;
+  };
+  const handlePlayMusic = (id: SoundId, options: IAudioPlayOption) => {
+    const audio = getAudioElement(id);
+    if (audio) {
+      audio.loop = Boolean(options?.loop);
+      audio.play();
+    }
+  };
+  const handleStopMusic = (id?: SoundId) => {
+    if (id) {
+      const audio = getAudioElement(id);
       if (audio) {
-        audio.play();
+        audio.pause();
+        audio.currentTime = 0;
       }
+    } else {
+      (Object.keys(soundMapper) as SoundId[]).forEach((key) => {
+        handleStopMusic(key);
+      });
     }
   };
   return (
@@ -60,6 +82,7 @@ export const Provider = ({ children }: React.PropsWithChildren<{}>) => {
       value={{
         speak: setSpeakId,
         play: handlePlayMusic,
+        stop: handleStopMusic,
       }}>
       {children}
       <div ref={soundWrapperRef}>

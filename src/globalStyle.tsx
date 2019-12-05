@@ -50,11 +50,12 @@ export default createGlobalStyle`
     font-family: 'BMHANNAPro', sans-serif;
     position: relative;
     background-color: #ffa800;
-    background-image: repeating-linear-gradient(-44.8deg,
+    background-size: 57px 57px;
+    background-image: repeating-linear-gradient(-45deg,
         transparent,
-        transparent 2rem,
-        rgba(255, 255, 255, 0.3) 2rem,
-        rgba(255, 255, 255, 0.3) 4rem);
+        transparent 20px,
+        rgba(255, 255, 255, 0.3) 20px,
+        rgba(255, 255, 255, 0.3) 40px);
     animation: 1s body-background-pattern infinite linear;
     border: 1rem solid #000;
     overflow: hidden;
@@ -69,7 +70,6 @@ export default createGlobalStyle`
   #root {
     width: 100%;
     height: 100%;
-    clip-path: inset(2.5rem);
     position: relative;
     z-index: 2;
   }
@@ -90,10 +90,12 @@ export default createGlobalStyle`
     top: 50%;
     left: 0;
     pointer-events: none;
+    clip-path: inset(2.5rem);
   }
 
   video {
     z-index: -1;
+    filter: brightness(1.1);
   }
 
   canvas {

@@ -1,18 +1,19 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { usePrevious } from 'react-use';
 
 // Resources
-import centerImage from '../resources/middle.png';
-import leftMovingImage from '../resources/left-moving.png';
-import leftImage from '../resources/left.png';
-import rightMovingImage from '../resources/right-moving.png';
-import rightImage from '../resources/right.png';
+import centerImage from '../resources/center-hand.png';
+import leftMovingImage from '../resources/left-hand-moving.png';
+import leftImage from '../resources/left-hand.png';
+import rightMovingImage from '../resources/right-hand-moving.png';
+import rightImage from '../resources/right-hand.png';
 import AudioPlayerContext from '../contexts/audioPlayer';
+import { requestAnimationFrameTimeout } from '../helpers/requestAnimationFrame';
 
 type Direction = 'center' | 'right' | 'left';
 
-const ANIMATION_TIME = 100;
+const ANIMATION_TIME = 200;
 
 function moveHandAnimation(
   prevDirection: Direction,
@@ -20,7 +21,7 @@ function moveHandAnimation(
   dispatch: React.Dispatch<string>
 ) {
   let timer = 0;
-  let callback = () => window.clearTimeout(timer);
+  let callback = () => window.cancelAnimationFrame(timer);
   if (direction !== prevDirection) {
     const movingImage =
       prevDirection === 'center'
@@ -37,10 +38,10 @@ function moveHandAnimation(
           : leftImage
         : centerImage;
     dispatch(movingImage);
-    timer = window.setTimeout(() => {
+    timer = requestAnimationFrameTimeout(() => {
       dispatch(targetImage);
       if (prevDirection !== 'center' && direction !== 'center') {
-        timer = window.setTimeout(() => {
+        timer = requestAnimationFrameTimeout(() => {
           callback = moveHandAnimation('center', direction, dispatch);
         }, ANIMATION_TIME);
       }
@@ -53,14 +54,44 @@ interface IProps {
   direction: Direction;
 }
 
-const HandWrapper = styled.div`
+const handStartKeyframe = keyframes`
+  from {
+    transform: translate3d(-50%, 100%, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0%, 0);
+  }
+`;
+
+const handShakingKeyframe = keyframes`
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+`;
+
+const HandWrapper = styled.div<IProps>`
   position: absolute;
-  width: 100%;
-  top: 50%;
   z-index: 10;
-  left: 0;
-  transform: translate3d(0, -50%, 0) scale(0.75);
+  left: 50%;
+  transform: translate3d(-50%, 100%, 0);
+  height: 60%;
+  bottom: -20px;
   pointer-events: none;
+  animation: ${handStartKeyframe} 500ms both;
+  width: 100%;
+  img {
+    display: block;
+    height: 100%;
+    margin: 0 auto;
+    ${(props) =>
+      props.direction === 'center' &&
+      css`
+        animation: ${handShakingKeyframe} 500ms infinite alternate-reverse;
+      `}
+  }
 `;
 
 function Hand({ direction }: IProps) {
@@ -76,7 +107,7 @@ function Hand({ direction }: IProps) {
     }
   }, [direction]);
   return (
-    <HandWrapper>
+    <HandWrapper direction={direction}>
       <img src={currentImage} alt="Hand" />
     </HandWrapper>
   );
