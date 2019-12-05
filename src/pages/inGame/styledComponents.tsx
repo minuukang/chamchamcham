@@ -25,5 +25,6 @@ export const PointValue = styled(Title)`
 
 export const PointTrophy = styled.div`
   margin-right: 1rem;
-  width: 8rem;
+  height: 10rem;
+  width: 10rem;
 `;

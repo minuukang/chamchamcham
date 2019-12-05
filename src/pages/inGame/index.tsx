@@ -37,11 +37,11 @@ export default function InGamePage(props: IProps) {
         {pointTrophy < 3 ? (
           <PointTrophy>
             {pointTrophy === 0 ? (
-              <img src={trophyGold} />
+              <img src={trophyGold} alt="Gold Medal" />
             ) : pointTrophy === 1 ? (
-              <img src={trophySilver} />
+              <img src={trophySilver} alt="Silver Medal" />
             ) : (
-              <img src={trophyBronze} />
+              <img src={trophyBronze} alt="Bronze Medal" />
             )}
           </PointTrophy>
         ) : null}

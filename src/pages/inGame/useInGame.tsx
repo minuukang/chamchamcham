@@ -64,30 +64,28 @@ export default function useInGame({
     let timer = 0;
     if (position && position !== 'center' && prevPosition === 'center') {
       setToastMessage(null);
-      timer = requestAnimationFrameTimeout(() => {
-        setShowTitle(3);
-        const weight = 1 - (1 + point) / 20;
-        const playerWin = Math.random() < (weight > 0.5 ? weight : 0.5);
-        if (playerWin) {
-          setComputerPosition(position === 'right' ? 'left' : 'right');
-          setPoint((prevPoint) => prevPoint + 1);
-        } else {
-          setComputerPosition(position);
-          (async () => {
-            const gamePlayId = await addRanking({
-              ...player.toData(),
-              point,
-            });
-            await setBestMatchCollection(
-              player.labelName,
-              player.getFaceMatcher()
-            );
-            setTimeout(() => {
-              handleGameEnd(gamePlayId);
-            }, 500);
-          })();
-        }
-      }, 100);
+      setShowTitle(3);
+      const weight = 1 - (1 + point) / 20;
+      const playerWin = Math.random() < (weight > 0.5 ? weight : 0.5);
+      if (playerWin) {
+        setComputerPosition(position === 'right' ? 'left' : 'right');
+        setPoint((prevPoint) => prevPoint + 1);
+      } else {
+        setComputerPosition(position);
+        (async () => {
+          const gamePlayId = await addRanking({
+            ...player.toData(),
+            point,
+          });
+          await setBestMatchCollection(
+            player.labelName,
+            player.getFaceMatcher()
+          );
+          setTimeout(() => {
+            handleGameEnd(gamePlayId);
+          }, 500);
+        })();
+      }
     } else {
       if (prevPosition !== 'center' && position === 'center') {
         setToastMessage(null);
