@@ -17,6 +17,7 @@ export const Point = styled.div`
   right: 4rem;
   bottom: 4rem;
   display: flex;
+  z-index: 10;
 `;
 
 export const PointValue = styled(Title)`
@@ -27,4 +28,10 @@ export const PointTrophy = styled.div`
   margin-right: 1rem;
   height: 10rem;
   width: 10rem;
+`;
+
+export const MiniRank = styled.div`
+  position: absolute;
+  left: 50px;
+  top: 50px;
 `;

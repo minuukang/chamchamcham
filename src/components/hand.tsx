@@ -9,7 +9,11 @@ import leftImage from '../resources/left-hand.png';
 import rightMovingImage from '../resources/right-hand-moving.png';
 import rightImage from '../resources/right-hand.png';
 import AudioPlayerContext from '../contexts/audioPlayer';
-import { requestAnimationFrameTimeout } from '../helpers/requestAnimationFrame';
+import {
+  requestAnimationFrameTimeout,
+  IAnimationFrameRef,
+  cancelAnimationFrameTimeout,
+} from '../helpers/requestAnimationFrame';
 
 type Direction = 'center' | 'right' | 'left';
 
@@ -20,8 +24,8 @@ function moveHandAnimation(
   direction: Direction,
   dispatch: React.Dispatch<string>
 ) {
-  let timer = 0;
-  let callback = () => window.cancelAnimationFrame(timer);
+  let timerHandle: IAnimationFrameRef;
+  let callback = () => cancelAnimationFrameTimeout(timerHandle);
   if (direction !== prevDirection) {
     const movingImage =
       prevDirection === 'center'
@@ -38,10 +42,10 @@ function moveHandAnimation(
           : leftImage
         : centerImage;
     dispatch(movingImage);
-    timer = requestAnimationFrameTimeout(() => {
+    timerHandle = requestAnimationFrameTimeout(() => {
       dispatch(targetImage);
       if (prevDirection !== 'center' && direction !== 'center') {
-        timer = requestAnimationFrameTimeout(() => {
+        timerHandle = requestAnimationFrameTimeout(() => {
           callback = moveHandAnimation('center', direction, dispatch);
         }, ANIMATION_TIME);
       }

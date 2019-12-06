@@ -23,15 +23,11 @@ export async function getFormatRankings(): Promise<IFormatRank[]> {
   const sortRank = ranks.slice().sort((a, b) => {
     return b.point - a.point;
   });
-  const rankMap = sortRank.reduce((map, rank) => {
-    map.set(rank.point, 1 + (map.get(rank.point) || 0));
-    return map;
-  }, new Map<number, number>());
-  const rankMapKeys = Array.from(rankMap.keys());
+  const rankMapSet = Array.from(new Set(sortRank.map((rank) => rank.point)));
   return sortRank.map<IFormatRank>((rank, _index, allRanks) => {
     return {
       ...rank,
-      joint: rankMapKeys.indexOf(rank.point),
+      joint: rankMapSet.indexOf(rank.point),
       rank: allRanks.findIndex(({ point }) => point === rank.point),
     };
   });

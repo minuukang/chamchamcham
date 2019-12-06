@@ -100,5 +100,6 @@ export default createGlobalStyle`
 
   canvas {
     z-index: 15;
+    opacity: 0.5;
   }
 `;

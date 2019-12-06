@@ -44,7 +44,8 @@ export default function ScanningPage({
   };
   const timerRef = React.useRef<number>();
   React.useEffect(() => {
-    audioPlayer.stop('start-bgm');
+    audioPlayer.stop();
+    audioPlayer.play('scanning-bgm', { loop: true });
     gameDrawHandlerRef.current = async ({ c3, player }) => {
       const bestMatch = await player.getBestMatch();
       if (bestMatch) {
@@ -67,6 +68,7 @@ export default function ScanningPage({
         if (facePositionType === 'semi-left') {
           speakAndToast('조금 더 왼쪽으로 얼굴을 돌려주세요.');
         } else if (facePositionType === 'left') {
+          speakAndToast('잠시만 기달려주세요.');
           timerRef.current = setTimeout(() => {
             speakAndToast('잘하셨습니다.');
             timerRef.current = setTimeout(() => {
@@ -85,6 +87,7 @@ export default function ScanningPage({
         if (facePositionType === 'semi-right') {
           speakAndToast('조금 더 오른쪽 얼굴을 돌려주세요.');
         } else if (facePositionType === 'right') {
+          speakAndToast('잠시만 기달려주세요.');
           timerRef.current = setTimeout(() => {
             speakAndToast(
               '잘하셨습니다. 이제 게임을 시작합니다. 중앙을 바라봐주세요.'

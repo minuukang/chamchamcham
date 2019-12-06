@@ -4,7 +4,7 @@ import ChamChamCham, { C3FaceMatch } from './chamchamcham';
 import createImageFromFaceMatch from '../helpers/createImageFromFaceMatch';
 import createNameFromFaceMatch from '../helpers/createNameFromFaceMatch';
 
-export const maxDescriptorDistance = 0.5;
+export const maxDescriptorDistance = 0.35;
 export default class Player {
   public readonly name: string;
   private faceMatcher: faceapi.FaceMatcher;

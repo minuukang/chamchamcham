@@ -1,11 +1,13 @@
 import * as React from 'react';
 import Hand from '../../components/hand';
+import MiniRankItem from '../../components/miniRank';
 import {
   TitleWrapper,
   AnimeTitle,
   Container,
   Point,
   PointValue,
+  MiniRank,
   PointTrophy,
 } from './styledComponents';
 import useInGame, { IProps } from './useInGame';
@@ -15,10 +17,25 @@ import trophySilver from '../../resources/trophy-silver.svg';
 import trophyBronze from '../../resources/trophy-bronze.svg';
 
 export default function InGamePage(props: IProps) {
-  const { showTitle, computerPosition, point, pointTrophy } = useInGame(props);
+  const {
+    showTitle,
+    computerPosition,
+    point,
+    pointTrophy,
+    ranksWithCurrent,
+  } = useInGame(props);
   const pointFormat = String(point * 100);
   return (
     <Container>
+      <MiniRank>
+        {ranksWithCurrent.map((rank) => (
+          <MiniRankItem
+            rank={rank}
+            mine={rank.id === 'currentRank'}
+            key={rank.id}
+          />
+        ))}
+      </MiniRank>
       <TitleWrapper>
         {Array.from(new Array(3)).map((_, index, { length }) => {
           const value = index === length - 1 ? '참!' : '참';

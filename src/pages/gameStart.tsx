@@ -11,6 +11,7 @@ import { C3FaceMatch } from '../modules/chamchamcham';
 import { FacePosition } from '../types';
 import useButtonAudio from '../useButtonAudio';
 import AudioPlayerContext from '../contexts/audioPlayer';
+import { usePrevious } from 'react-use';
 
 interface IProps {
   onStartClick(faceMatch: C3FaceMatch): void;
@@ -39,6 +40,7 @@ export default function GameStartPage(props: IProps) {
   const audioPlayer = React.useContext(AudioPlayerContext);
   const [position, setPosition] = React.useState<FacePosition | null>();
   const [startFace, setStartFace] = React.useState<C3FaceMatch | null>(null);
+  const prevStartFace = usePrevious(startFace);
   React.useEffect(() => {
     if (position && startFace && position === 'center') {
       setToastMessage(null);
@@ -50,6 +52,14 @@ export default function GameStartPage(props: IProps) {
       }
     }
   }, [position, startFace]);
+  React.useEffect(() => {
+    if (!prevStartFace && startFace) {
+      handleIntroPlay();
+    }
+  }, [startFace]);
+  const handleIntroPlay = React.useCallback(() => {
+    audioPlayer.play('intro');
+  }, []);
   React.useEffect(() => {
     audioPlayer.play('start-bgm', { loop: true });
     gameDrawHandlerRef.current = async ({ c3 }) => {
@@ -88,7 +98,7 @@ export default function GameStartPage(props: IProps) {
         title="랭킹"
         onClick={handleRankingClick}
       />
-      <TitleWrapper>
+      <TitleWrapper onClick={handleIntroPlay}>
         <AnimeTitle title="참">참</AnimeTitle>
         <AnimeTitle title="참">참</AnimeTitle>
         <AnimeTitle title="참">참</AnimeTitle>

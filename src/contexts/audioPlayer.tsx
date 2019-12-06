@@ -7,9 +7,13 @@ type SoundId =
   | 'pipe-sound'
   | 'throw-sound'
   | 'wow'
+  | 'cham'
+  | 'big-cham'
   | 'error'
+  | 'intro'
   | 'in-game'
   | 'end-game'
+  | 'scanning-bgm'
   | 'start-bgm'
   | 'whooo';
 
@@ -22,6 +26,10 @@ const soundMapper: Record<SoundId, string> = {
   'start-bgm': require('../resources/sounds/start-bgm.mp3'),
   'in-game': require('../resources/sounds/in-game.mp3'),
   'end-game': require('../resources/sounds/end-game.mp3'),
+  'scanning-bgm': require('../resources/sounds/scanning-bgm.mp3'),
+  intro: require('../resources/sounds/intro.mp3'),
+  cham: require('../resources/sounds/cham.mp3'),
+  'big-cham': require('../resources/sounds/big-cham.mp3'),
   wow: require('../resources/sounds/wow.wav'),
   error: require('../resources/sounds/error.wav'),
   whooo: require('../resources/sounds/whooo.wav'),
@@ -49,7 +57,7 @@ export const Provider = ({ children }: React.PropsWithChildren<{}>) => {
       const utter = new SpeechSynthesisUtterance(speakId);
       speechSynthesis.cancel();
       speechSynthesis.speak(utter);
-      utter.onstart = () => {
+      utter.onboundary = () => {
         setSpeakId(null);
       };
     }
@@ -61,6 +69,10 @@ export const Provider = ({ children }: React.PropsWithChildren<{}>) => {
     const audio = getAudioElement(id);
     if (audio) {
       audio.loop = Boolean(options?.loop);
+      if (!audio.paused) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
       audio.play();
     }
   };

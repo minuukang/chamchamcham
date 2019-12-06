@@ -153,6 +153,7 @@ export const ToastMessage = styled.div`
   color: #fff;
   z-index: 999;
   pointer-events: none;
+  white-space: nowrap;
 `;
 
 const animeLetterKeyframe = keyframes`
