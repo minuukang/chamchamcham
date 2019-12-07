@@ -40,6 +40,7 @@ export default function GameStartPage(props: IProps) {
   const audioPlayer = React.useContext(AudioPlayerContext);
   const [position, setPosition] = React.useState<FacePosition | null>();
   const [startFace, setStartFace] = React.useState<C3FaceMatch | null>(null);
+  const [readyDetection, setReadyDetection] = React.useState(false);
   const prevStartFace = usePrevious(startFace);
   React.useEffect(() => {
     if (position && startFace && position === 'center') {
@@ -57,6 +58,13 @@ export default function GameStartPage(props: IProps) {
       handleIntroPlay();
     }
   }, [startFace]);
+  React.useEffect(() => {
+    if (readyDetection) {
+      setToastMessage(null);
+    } else {
+      setToastMessage('카메라 인식 준비 중입니다.');
+    }
+  }, [readyDetection]);
   const handleIntroPlay = React.useCallback(() => {
     audioPlayer.play('intro');
   }, []);
@@ -65,6 +73,7 @@ export default function GameStartPage(props: IProps) {
     gameDrawHandlerRef.current = async ({ c3 }) => {
       const detection = await c3.getDetectSingleFace();
       if (detection) {
+        setReadyDetection(true);
         const facePosition = c3.getMatchFacePositionType(detection);
         setPosition(facePosition);
         setStartFace(detection);

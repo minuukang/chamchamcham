@@ -81,8 +81,21 @@ function useGameHandler() {
 
 export default function useSetupGame() {
   const props = useGameHandler();
-  const { c3Instance, playerInstance, videoRef, gameDrawHandler, page } = props;
+  const {
+    c3Instance,
+    playerInstance,
+    videoRef,
+    gameDrawHandler,
+    page,
+    setToastMessage,
+  } = props;
   const [readyUserMedia, setReadyUserMedia] = React.useState(false);
+  const [videoDetectionError, setVideoDetectionError] = React.useState(false);
+  React.useEffect(() => {
+    if (videoDetectionError) {
+      setToastMessage('카메라를 인식 할 수 없습니다.');
+    }
+  }, [videoDetectionError]);
   React.useEffect(() => {
     let cancelTimer = 0;
     let inCancel = false;
@@ -138,7 +151,7 @@ export default function useSetupGame() {
           setReadyUserMedia(true);
         };
       } catch (e) {
-        console.error(e);
+        setVideoDetectionError(true);
       }
     })();
   }, []);
