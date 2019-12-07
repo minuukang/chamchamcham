@@ -23,7 +23,10 @@ export default class Player {
     this.faceMatcher =
       faceMatcher || new faceapi.FaceMatcher(label, maxDescriptorDistance);
     this.createdAt = new Date();
-    createImageFromFaceMatch(match, c3.input).then((blob) => {
+  }
+
+  public async loadProfileImage() {
+    return createImageFromFaceMatch(this.match, this.c3.input).then((blob) => {
       this.profileImage = blob;
     });
   }

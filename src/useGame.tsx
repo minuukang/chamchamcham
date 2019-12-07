@@ -46,9 +46,13 @@ function useGameHandler() {
   const handleScanningFace = React.useCallback(
     async (faceMatch: C3FaceMatch) => {
       const bestMatcher = await getBestMatchCollection(faceMatch);
-      setPlayer(
-        new C3Player(c3Instance.current!, faceMatch, bestMatcher || undefined)
+      const player = new C3Player(
+        c3Instance.current!,
+        faceMatch,
+        bestMatcher || undefined
       );
+      setPlayer(player);
+      await player.loadProfileImage();
       setPage(bestMatcher ? 'in-game' : 'scanning');
     },
     []

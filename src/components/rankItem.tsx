@@ -118,14 +118,14 @@ interface IProps {
 
 const RankItem = React.forwardRef<HTMLDivElement, IProps>(
   ({ rank, mine }, ref) => {
-    const [imageSrc, setImageSrc] = React.useState('');
+    const imageSrc = React.useMemo(() => URL.createObjectURL(rank.image), [
+      rank,
+    ]);
     React.useEffect(() => {
-      const blobImageSrc = URL.createObjectURL(rank.image);
-      setImageSrc(blobImageSrc);
       return () => {
-        URL.revokeObjectURL(blobImageSrc);
+        URL.revokeObjectURL(imageSrc);
       };
-    }, [rank.image]);
+    }, [rank]);
     return (
       <Wrapper mine={Boolean(mine)} ref={ref}>
         <Content>
