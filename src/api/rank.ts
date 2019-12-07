@@ -18,8 +18,7 @@ export async function getRankings(): Promise<IRank[]> {
   return (await store.getItem<IRank[]>('rank')) || [];
 }
 
-export async function getFormatRankings(): Promise<IFormatRank[]> {
-  const ranks = await getRankings();
+export function formatRankingsSelector(ranks: IRank[]): IFormatRank[] {
   const sortRank = ranks.slice().sort((a, b) => {
     return b.point - a.point;
   });
@@ -31,6 +30,10 @@ export async function getFormatRankings(): Promise<IFormatRank[]> {
       rank: allRanks.findIndex(({ point }) => point === rank.point),
     };
   });
+}
+
+export async function getFormatRankings(): Promise<IFormatRank[]> {
+  return formatRankingsSelector(await getRankings());
 }
 
 export async function getFormatRankById(

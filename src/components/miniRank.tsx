@@ -97,7 +97,7 @@ const RankItem = React.forwardRef<HTMLDivElement, IProps>(
           ) : joint === 3 ? (
             <img src={trophyBronze} alt="Bronze Medal" />
           ) : (
-            '-'
+            joint
           )}
         </Rank>
         <Content>

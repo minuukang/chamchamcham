@@ -10,7 +10,7 @@ import {
   MiniRank,
   PointTrophy,
 } from './styledComponents';
-import useInGame, { IProps } from './useInGame';
+import useInGame, { IProps, CURRENT_USER_ID } from './useInGame';
 
 import trophyGold from '../../resources/trophy-gold.svg';
 import trophySilver from '../../resources/trophy-silver.svg';
@@ -31,7 +31,7 @@ export default function InGamePage(props: IProps) {
         {ranksWithCurrent.map((rank) => (
           <MiniRankItem
             rank={rank}
-            mine={rank.id === 'currentRank'}
+            mine={rank.id === CURRENT_USER_ID}
             key={rank.id}
           />
         ))}

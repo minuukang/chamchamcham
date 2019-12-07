@@ -1,7 +1,13 @@
 import * as React from 'react';
 import C3Player from '../../modules/player';
 import { IGameDrawHandler } from '../../useGame';
-import { addRanking, getFormatRankings, IFormatRank } from '../../api/rank';
+import {
+  addRanking,
+  IFormatRank,
+  IRank,
+  getRankings,
+  formatRankingsSelector,
+} from '../../api/rank';
 import { setBestMatchCollection } from '../../api/face';
 import { usePrevious } from 'react-use';
 import AudioPlayerContext from '../../contexts/audioPlayer';
@@ -19,6 +25,8 @@ export interface IProps {
   handleGameEnd(gameId: string): void;
 }
 
+export const CURRENT_USER_ID = 'currentUser';
+
 export default function useInGame({
   setToastMessage,
   gameDrawHandlerRef,
@@ -26,62 +34,36 @@ export default function useInGame({
   player,
 }: IProps) {
   const audioPlayer = React.useContext(AudioPlayerContext);
-  const [ranks, setRanks] = React.useState<IFormatRank[] | null>(null);
+  const [ranks, setRanks] = React.useState<IRank[] | null>(null);
   const [position, setPosition] = React.useState<FacePosition | null>('center');
   const [computerPosition, setComputerPosition] = React.useState<FacePosition>(
     'center'
   );
   const [point, setPoint] = React.useState(0);
   const prevPosition = usePrevious(position);
-  const pointTrophy = React.useMemo(() => {
-    if (!ranks) {
-      return 0;
-    }
-    const sameRank = ranks.find((r) => r.point === point);
-    if (sameRank) {
-      return sameRank.joint;
-    } else {
-      const findRank = Math.min(
-        ...ranks.filter((r) => r.point < point).map((r) => r.joint)
-      );
-      if (!Number.isFinite(findRank)) {
-        return Math.max(...ranks.map((r) => r.joint)) + 1;
-      } else {
-        return findRank;
-      }
-    }
-  }, [point, ranks]);
   const ranksWithCurrent = React.useMemo(() => {
-    const currentRank: IFormatRank = {
+    const currentRank: IRank = {
       ...player.toData(),
-      id: 'currentRank',
+      id: CURRENT_USER_ID,
       point,
-      joint: pointTrophy,
-      rank: 0,
     };
-    if (!ranks) {
-      return [currentRank];
-    } else {
-      const sortRanks = ranks.slice().sort((a, b) => b.point - a.point);
-      currentRank.rank = sortRanks.findIndex(
-        (rank) => rank.point === currentRank.point
-      );
-      return sortRanks
-        .reduce<IFormatRank[]>((result, rank) => {
-          if (!result.some((findRank) => findRank.rank === rank.rank)) {
-            return result.concat(rank);
-          }
-          return result;
-        }, [])
-        .slice(0, 3)
-        .map((rank) => ({
-          ...rank,
-          joint: rank.point < currentRank.point ? rank.joint + 1 : rank.joint,
-        }))
-        .concat(currentRank.point ? [currentRank] : [])
-        .sort((a, b) => a.joint - b.joint);
-    }
-  }, [ranks, player, point, pointTrophy]);
+    return formatRankingsSelector([...(ranks || []), currentRank])
+      .reduce<IFormatRank[]>((result, rank) => {
+        if (
+          rank.id === CURRENT_USER_ID ||
+          !result.some((findRank) => findRank.rank === rank.rank)
+        ) {
+          return result.concat(rank);
+        }
+        return result;
+      }, [])
+      .filter((rank) => {
+        return rank.joint < 4 || rank.id === CURRENT_USER_ID;
+      });
+  }, [ranks, player, point]);
+  const pointTrophy = ranksWithCurrent.find(
+    (rank) => rank.id === CURRENT_USER_ID
+  )!.joint;
   React.useEffect(() => {
     if (point) {
       setTimeout(() => {
@@ -173,7 +155,7 @@ export default function useInGame({
     audioPlayer.stop();
     audioPlayer.play('in-game', { loop: true });
     (async () => {
-      setRanks(await getFormatRankings());
+      setRanks(await getRankings());
     })();
     return () => {
       setToastMessage(null);
