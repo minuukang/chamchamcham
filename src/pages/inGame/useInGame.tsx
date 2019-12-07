@@ -85,7 +85,17 @@ export default function useInGame({
   React.useEffect(() => {
     if (point) {
       setTimeout(() => {
-        audioPlayer.play('wow');
+        const wows = [
+          'wow',
+          'wow2',
+          'wow3',
+          'wow4',
+          'wow5',
+          'wow6',
+          'wow7',
+          'wow8',
+        ] as const;
+        audioPlayer.play(wows[Math.floor(Math.random() * wows.length)]);
       }, 500);
     }
   }, [point]);

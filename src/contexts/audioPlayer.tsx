@@ -7,6 +7,13 @@ type SoundId =
   | 'pipe-sound'
   | 'throw-sound'
   | 'wow'
+  | 'wow2'
+  | 'wow3'
+  | 'wow4'
+  | 'wow5'
+  | 'wow6'
+  | 'wow7'
+  | 'wow8'
   | 'cham'
   | 'big-cham'
   | 'error'
@@ -31,6 +38,13 @@ const soundMapper: Record<SoundId, string> = {
   cham: require('../resources/sounds/cham.mp3'),
   'big-cham': require('../resources/sounds/big-cham.mp3'),
   wow: require('../resources/sounds/wow.wav'),
+  wow2: require('../resources/sounds/wow2.mp3'),
+  wow3: require('../resources/sounds/wow3.mp3'),
+  wow4: require('../resources/sounds/wow4.mp3'),
+  wow5: require('../resources/sounds/wow5.mp3'),
+  wow6: require('../resources/sounds/wow6.mp3'),
+  wow7: require('../resources/sounds/wow7.mp3'),
+  wow8: require('../resources/sounds/wow8.mp3'),
   error: require('../resources/sounds/error.wav'),
   whooo: require('../resources/sounds/whooo.wav'),
 };
@@ -55,11 +69,8 @@ export const Provider = ({ children }: React.PropsWithChildren<{}>) => {
   React.useEffect(() => {
     if (speakId) {
       const utter = new SpeechSynthesisUtterance(speakId);
-      speechSynthesis.cancel();
       speechSynthesis.speak(utter);
-      utter.onboundary = () => {
-        setSpeakId(null);
-      };
+      return () => speechSynthesis.cancel();
     }
   }, [speakId]);
   const getAudioElement = (id: SoundId): HTMLAudioElement | null => {
