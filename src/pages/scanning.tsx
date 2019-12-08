@@ -1,6 +1,9 @@
 import * as React from 'react';
+import AnimationNumber from '../components/animationNumber';
 import { IGameDrawHandler } from '../useGame';
 import AudioPlayerContext from '../contexts/audioPlayer';
+import styled from 'styled-components';
+import { Title } from '../styledComponents';
 
 interface IProps {
   setToastMessage: React.Dispatch<string | null>;
@@ -8,36 +11,79 @@ interface IProps {
   gameDrawHandlerRef: React.MutableRefObject<IGameDrawHandler | undefined>;
 }
 
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 75px;
+  justify-content: space-between;
+`;
+
+const Gauge = styled.div`
+  border: 2.5px solid #000;
+  background-color: #fff;
+  height: 60px;
+  width: 350px;
+  position: relative;
+  overflow: hidden;
+`;
+
+const GaugeBar = styled.div`
+  position: absolute;
+  height: 100%;
+  left: 0;
+  top: 0;
+  transition: 300ms width;
+  background-image: linear-gradient(to bottom, #f2a613, #ebc50f);
+  &::after {
+    display: block;
+    position: absolute;
+    content: '';
+    height: 100%;
+    top: 0;
+    left: -3px;
+    right: -3px;
+    box-shadow: inset 0px -2.5px 0px 2.5px #a85131,
+      inset 0px 2.5px 0 2.5px #f9ef85;
+  }
+`;
+
+const GaugeText = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  font-size: 35px;
+  color: #fff;
+  -webkit-text-stroke: 1px #000;
+  text-shadow: 3px 3px 0 #000;
+  letter-spacing: -0.025em;
+  z-index: 1;
+`;
+
 export default function ScanningPage({
   setToastMessage,
   handlePlayGame,
   gameDrawHandlerRef,
 }: IProps) {
   const audioPlayer = React.useContext(AudioPlayerContext);
-  const [faceData, setFaceData] = React.useState<{
-    nosePosition: number;
-    faceDegree: number;
-  } | null>(null);
-  const [successPosition, setSuccessPosition] = React.useState(() => ({
-    left: false,
+  const [successDirection, setSuccessDirection] = React.useState(() => ({
     right: false,
+    left: false,
   }));
-  const facePositionType = React.useMemo(() => {
-    if (!faceData || faceData.faceDegree > 20) {
-      return null;
-    }
-    return faceData.nosePosition > 25 && faceData.nosePosition < 75
-      ? 'center'
-      : faceData.nosePosition > 10 && faceData.nosePosition < 25
-      ? 'semi-left'
-      : faceData.nosePosition < 10
-      ? 'left'
-      : faceData.nosePosition > 75 && faceData.nosePosition < 90
-      ? 'semi-right'
-      : faceData.nosePosition > 90
-      ? 'right'
-      : null;
-  }, [faceData]);
+  const [nosePositionSet, setNosePositionSet] = React.useState<number[]>(
+    () => []
+  );
+  const leftNosePositionSetLength = React.useMemo(
+    () => nosePositionSet.filter((v) => v < 50).length,
+    [nosePositionSet]
+  );
+  const rightNosePositionSetLength = React.useMemo(
+    () => nosePositionSet.filter((v) => v > 50).length,
+    [nosePositionSet]
+  );
   const speakAndToast = (message: string | null) => {
     message && audioPlayer.speak(message);
     setToastMessage(message);
@@ -51,9 +97,12 @@ export default function ScanningPage({
       if (bestMatch) {
         player.saveBestMatch(bestMatch);
         c3.drawLandmark(bestMatch.detection);
-        setFaceData(c3.getMatchFacePosition(bestMatch.detection));
+        const { nosePosition } = c3.getMatchFacePosition(bestMatch.detection);
+        setNosePositionSet((prevSet) =>
+          Array.from(new Set([...prevSet, Math.round(nosePosition)]))
+        );
       } else {
-        setFaceData(null);
+        c3.clear();
       }
     };
     return () => {
@@ -64,49 +113,60 @@ export default function ScanningPage({
   }, []);
   React.useEffect(() => {
     if (!timerRef.current) {
-      if (!successPosition.left) {
-        if (facePositionType === 'semi-left') {
-          speakAndToast('조금 더 왼쪽으로 얼굴을 돌려주세요.');
-        } else if (facePositionType === 'left') {
-          speakAndToast('잠시만 기달려주세요.');
-          timerRef.current = setTimeout(() => {
-            speakAndToast('잘하셨습니다.');
-            timerRef.current = setTimeout(() => {
-              timerRef.current = 0;
-              setToastMessage(null);
-              setSuccessPosition((prevSuccessPosition) => ({
-                ...prevSuccessPosition,
-                left: true,
-              }));
-            }, 1500);
-          }, 2000);
-        } else {
-          speakAndToast('천천히 왼쪽으로 얼굴을 돌려주세요.');
-        }
-      } else if (!successPosition.right) {
-        if (facePositionType === 'semi-right') {
-          speakAndToast('조금 더 오른쪽 얼굴을 돌려주세요.');
-        } else if (facePositionType === 'right') {
-          speakAndToast('잠시만 기달려주세요.');
-          timerRef.current = setTimeout(() => {
-            speakAndToast(
-              '잘하셨습니다. 이제 게임을 시작합니다. 중앙을 바라봐주세요.'
-            );
+      if (!successDirection.left) {
+        if (leftNosePositionSetLength > 20) {
+          speakAndToast('잘하셨습니다.');
+          timerRef.current = window.setTimeout(() => {
             timerRef.current = 0;
-            setSuccessPosition((prevSuccessPosition) => ({
-              ...prevSuccessPosition,
-              right: true,
+            setSuccessDirection((prev) => ({
+              ...prev,
+              left: true,
             }));
           }, 2000);
         } else {
-          speakAndToast('천천히 오른쪽으로 얼굴을 돌려주세요.');
+          speakAndToast('천천히 왼쪽으로 고개를 돌려서 게이지를 완성해주세요.');
         }
-      } else if (facePositionType === 'center') {
-        timerRef.current = setTimeout(() => {
+      } else if (!successDirection.right) {
+        if (rightNosePositionSetLength > 20) {
+          speakAndToast(
+            '잘하셨습니다. 이제 곧 게임이 시작됩니다. 가운데를 바라봐주세요'
+          );
+          setSuccessDirection((prev) => ({
+            ...prev,
+            right: true,
+          }));
+        } else {
+          speakAndToast(
+            '천천히 오른쪽으로 고개를 돌려서 게이지를 완성해주세요.'
+          );
+        }
+      } else {
+        timerRef.current = window.setTimeout(() => {
           handlePlayGame();
-        }, 2000);
+        }, 5000);
       }
     }
-  }, [facePositionType, successPosition]);
-  return null;
+  }, [nosePositionSet, successDirection]);
+  const renderNosePositionPercent = !successDirection.left
+    ? Math.floor((leftNosePositionSetLength / 21) * 100)
+    : Math.floor((rightNosePositionSetLength / 21) * 100);
+  const renderNosePositionPercentValue = `${renderNosePositionPercent}%`;
+  return (
+    <Container>
+      <Title title="얼굴 인식 중...">얼굴 인식 중...</Title>
+      {/* <div>{leftNosePositionSetLength}</div>
+      <div>{rightNosePositionSetLength}</div> */}
+      <Gauge>
+        <GaugeText>
+          <AnimationNumber
+            key={successDirection.left ? 'left' : 'right'}
+            max={100}
+            value={renderNosePositionPercent}
+          />
+          %
+        </GaugeText>
+        <GaugeBar style={{ width: renderNosePositionPercentValue }} />
+      </Gauge>
+    </Container>
+  );
 }
