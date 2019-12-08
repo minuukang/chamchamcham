@@ -150,7 +150,12 @@ export default function ScanningPage({
   const renderNosePositionPercent = !successDirection.left
     ? Math.floor((leftNosePositionSetLength / 21) * 100)
     : Math.floor((rightNosePositionSetLength / 21) * 100);
-  const renderNosePositionPercentValue = `${renderNosePositionPercent}%`;
+  const renderNosePositionPercentValue = `${
+    renderNosePositionPercent > 100 ? 100 : renderNosePositionPercent
+  }%`;
+  React.useEffect(() => {
+    audioPlayer.play('charge');
+  }, [renderNosePositionPercentValue]);
   return (
     <Container>
       <Title title="얼굴 인식 중...">얼굴 인식 중...</Title>

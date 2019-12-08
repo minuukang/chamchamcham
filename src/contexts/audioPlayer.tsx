@@ -22,6 +22,7 @@ type SoundId =
   | 'end-game'
   | 'scanning-bgm'
   | 'start-bgm'
+  | 'charge'
   | 'whooo';
 
 // Sounds
@@ -47,6 +48,7 @@ const soundMapper: Record<SoundId, string> = {
   wow8: require('../resources/sounds/wow8.mp3'),
   error: require('../resources/sounds/error.wav'),
   whooo: require('../resources/sounds/whooo.wav'),
+  charge: require('../resources/sounds/charge.wav'),
 };
 
 interface IAudioPlayOption {
