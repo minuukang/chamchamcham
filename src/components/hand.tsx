@@ -22,25 +22,25 @@ const ANIMATION_TIME = 200;
 function moveHandAnimation(
   prevDirection: Direction,
   direction: Direction,
-  dispatch: React.Dispatch<string>
+  dispatch: React.Dispatch<HandDirection>
 ) {
   let timerHandle: IAnimationFrameRef;
   let callback = () => cancelAnimationFrameTimeout(timerHandle);
   if (direction !== prevDirection) {
-    const movingImage =
+    const movingImage: HandDirection =
       prevDirection === 'center'
         ? direction === 'right'
-          ? rightMovingImage
-          : leftMovingImage
+          ? 'right-moving'
+          : 'left-moving'
         : prevDirection === 'right'
-        ? rightMovingImage
-        : leftMovingImage;
-    const targetImage =
+        ? 'right-moving'
+        : 'left-moving';
+    const targetImage: HandDirection =
       prevDirection === 'center'
         ? direction === 'right'
-          ? rightImage
-          : leftImage
-        : centerImage;
+          ? 'right'
+          : 'left'
+        : 'center';
     dispatch(movingImage);
     timerHandle = requestAnimationFrameTimeout(() => {
       dispatch(targetImage);
@@ -69,14 +69,14 @@ const handStartKeyframe = keyframes`
 
 const handShakingKeyframe = keyframes`
   from {
-    transform: scale(1);
+    transform: translate3d(-50%, 0, 0) scale(1);
   }
   to {
-    transform: scale(1.1);
+    transform: translate3d(-50%, 0, 0) scale(1.1);
   }
 `;
 
-const HandWrapper = styled.div<IProps>`
+const HandWrapper = styled.div`
   position: absolute;
   z-index: 10;
   left: 50%;
@@ -86,33 +86,66 @@ const HandWrapper = styled.div<IProps>`
   pointer-events: none;
   animation: ${handStartKeyframe} 500ms both;
   width: 100%;
-  img {
-    display: block;
-    height: 100%;
-    margin: 0 auto;
-    ${(props) =>
-      props.direction === 'center' &&
-      css`
-        animation: ${handShakingKeyframe} 500ms infinite alternate-reverse;
-      `}
-  }
 `;
+
+type HandDirection =
+  | 'left'
+  | 'left-moving'
+  | 'center'
+  | 'right-moving'
+  | 'right';
+
+const HandImage = styled.img<{ type: HandDirection; visible: boolean }>`
+  display: block;
+  height: 100%;
+  margin: 0 auto;
+  visibility: ${(props) => (props.visible ? 'visible' : 'hidden')};
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate3d(-50%, 0, 0);
+  ${(props) =>
+    props.type === 'center' &&
+    css`
+      animation: ${handShakingKeyframe} 500ms infinite alternate-reverse;
+    `}
+`;
+
+const handImageMap: Record<HandDirection, string> = {
+  left: leftImage,
+  'left-moving': leftMovingImage,
+  center: centerImage,
+  'right-moving': rightMovingImage,
+  right: rightImage,
+};
 
 function Hand({ direction }: IProps) {
   const audioPlayer = React.useContext(AudioPlayerContext);
-  const [currentImage, setCurrentImage] = React.useState(centerImage);
+  const [currentDirection, setCurrentDirection] = React.useState<HandDirection>(
+    'center'
+  );
   const prevDirection = usePrevious(direction);
   React.useEffect(() => {
     if (prevDirection && prevDirection !== direction) {
       if (direction !== 'center') {
         audioPlayer.play('throw-sound');
       }
-      return moveHandAnimation(prevDirection, direction, setCurrentImage);
+      return moveHandAnimation(prevDirection, direction, setCurrentDirection);
     }
   }, [direction]);
   return (
-    <HandWrapper direction={direction}>
-      <img src={currentImage} alt="Hand" />
+    <HandWrapper>
+      {(Object.entries(handImageMap) as [HandDirection, string][]).map(
+        ([key, value]) => (
+          <HandImage
+            key={key}
+            visible={currentDirection === key}
+            type={key}
+            src={value}
+            alt="Hand Image"
+          />
+        )
+      )}
     </HandWrapper>
   );
 }
