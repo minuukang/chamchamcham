@@ -15,7 +15,7 @@
     "localforage": "^1.7.3",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
-    "react-scripts": "3.2.0",
+    "react-scripts": "5.0.1",
     "react-use": "^13.10.0",
     "shortid": "^2.2.15",
     "styled-components": "^4.4.1",
